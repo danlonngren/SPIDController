@@ -6,10 +6,10 @@
 git submodule update --init --recursive
 
 # Clean build
-rm -rf build        # Or "rmdir /s /q build" on Windows
+rm -rf build
 
 # Generate build
-cmake -S . -B build
+cmake -S . -B build -DBUILD_TESTS=ON
 
 # Build project
 cmake --build build
