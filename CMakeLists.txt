@@ -5,9 +5,8 @@ if(POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-project(sPIDControllerLib VERSION 0.1.1 DESCRIPTION "Simple PID Controller" LANGUAGES C CXX) 
+project(sPIDControllerLib VERSION 0.1.1 DESCRIPTION "Simple PID Controller" LANGUAGES CXX) 
 
-set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
 
 # Include to enable testing and set BUILD_TESTING var
