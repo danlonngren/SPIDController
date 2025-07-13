@@ -1,6 +1,6 @@
 # Setup source
 set(SOURCE
-	sPIDController.c
+	sPIDController.cpp
 )
 
 # Set header files
