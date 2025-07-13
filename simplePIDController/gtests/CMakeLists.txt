@@ -8,7 +8,7 @@ if (BUILD_TESTING)
     
     target_link_libraries(sPIDControllerTests PUBLIC 
         GTest::gtest_main
-        simplePIDController
+        sPIDController
     )
 
     # # Include gtest and all tests in executable

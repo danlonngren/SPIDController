@@ -2,6 +2,9 @@
 
 ## Run commands
 ```bash
+# Update gtest
+git submodule update --init --recursive
+
 # Clean build
 rm -rf build        # Or "rmdir /s /q build" on Windows
 
