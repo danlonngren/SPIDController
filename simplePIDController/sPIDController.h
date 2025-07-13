@@ -2,8 +2,18 @@
 
 class sPIDController {
 private:
-    float m_error, m_iError, m_dError;
-    float m_eLast;
+    struct pidData {
+        pidData() : pError(0.0f), iError(0.0f), dError(0.0f), eLast(0.0f) {}
+        ~pidData() = default;
+        
+        float pError, iError, dError, eLast;
+
+        void clear() {
+            pError = iError = dError = eLast = 0.0f;
+        }
+    };
+
+    pidData m_pidData;
     float m_kp, m_ki, m_kd;
     float m_pidOutput;
     float m_maxOutput;
