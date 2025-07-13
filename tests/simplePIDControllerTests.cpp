@@ -1,5 +1,5 @@
 
-#include "sPIDController.h"
+#include "simplePIDController.h"
 
 #include <gtest/gtest.h>
 
