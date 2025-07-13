@@ -1,19 +1,14 @@
 if (BUILD_TESTING)
-    # Include the circularBufferStatic library
-    include_directories(${CMAKE_SOURCE_DIR}/circularBufferStatic)
-
-    set(SOURCES
-        sPIDControllerTests.cpp
-    )
+    include_directories(${CMAKE_SOURCE_DIR}/simplePIDController)
 
     # Setup test executable
     add_executable(sPIDControllerTests 
-        ${SOURCES}
+        sPIDControllerTests.cpp
     )
     
     target_link_libraries(sPIDControllerTests PUBLIC 
         GTest::gtest_main
-        circularBufferStatic
+        simplePIDController
     )
 
     # # Include gtest and all tests in executable
@@ -25,5 +20,4 @@ if (BUILD_TESTING)
         NAME sPIDControllerTests
         COMMAND sPIDControllerTests
     )
-    
 endif()

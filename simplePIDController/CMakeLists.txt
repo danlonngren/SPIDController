@@ -1,9 +1,8 @@
-# Setup source
+# Add sources and include
 set(SOURCE
 	sPIDController.cpp
 )
 
-# Set header files
 set(HEADER
     sPIDController.h
 )

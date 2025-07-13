@@ -5,7 +5,7 @@ if(POLICY CMP0048)
     cmake_policy(SET CMP0048 NEW)
 endif()
 
-project(sPIDController VERSION 0.1.1 DESCRIPTION "Simple PID Controller" LANGUAGES C CXX) 
+project(sPIDControllerLib VERSION 0.1.1 DESCRIPTION "Simple PID Controller" LANGUAGES C CXX) 
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_CXX_STANDARD 20)
@@ -16,4 +16,4 @@ include(CTest)
 
 # Add all sub directories
 add_subdirectory(external)
-add_subdirectory(source)
+add_subdirectory(simplePIDController)
