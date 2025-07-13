@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../include/IsPIDController.h"
+#include "../include/simplePIDControllerInterface.h"
 
 class SPIDController : public IsPIDController {
 private:
