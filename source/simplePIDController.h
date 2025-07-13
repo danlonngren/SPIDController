@@ -2,7 +2,7 @@
 
 #include "../include/simplePIDControllerInterface.h"
 
-class SPIDController : public IsPIDController {
+class SimplePIDController : public SimplePIDControllerInterface {
 private:
     PidState m_pidData;
     float m_kp, m_ki, m_kd;
@@ -12,8 +12,8 @@ private:
     bool m_started = false;
 
 public:
-    SPIDController(float kp, float ki, float kd, float outMax);
-    ~SPIDController() = default;
+    SimplePIDController(float kp, float ki, float kd, float outMax);
+    ~SimplePIDController() = default;
 
     float evaluate(float input, float setpoint, float dt);
     void reset();

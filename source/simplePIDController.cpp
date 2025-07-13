@@ -4,7 +4,7 @@
 
 using namespace std;
 
-SPIDController::SPIDController(float kp, float ki, float kd, float outMax) :
+SimplePIDController::SimplePIDController(float kp, float ki, float kd, float outMax) :
     m_pidData(), 
     m_kp(kp), 
     m_ki(ki), 
@@ -12,7 +12,7 @@ SPIDController::SPIDController(float kp, float ki, float kd, float outMax) :
     m_maxOutput(outMax), 
     m_pidOutput(0.0f) {}
 
-float SPIDController::evaluate(float input, float setpoint, float dt) {
+float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     float error = setpoint - input;
     
     // Avoid division by zero
@@ -39,29 +39,29 @@ float SPIDController::evaluate(float input, float setpoint, float dt) {
 	return m_pidOutput;
 }
 
-void SPIDController::reset() {
+void SimplePIDController::reset() {
 	m_pidData.clear();
     m_pidOutput = 0.0f;
     m_started = false;
 }
 
-void SPIDController::setPidGains(float kp, float ki, float kd) {
+void SimplePIDController::setPidGains(float kp, float ki, float kd) {
 	m_kp = kp;
 	m_ki = ki;
 	m_kd = kd;
 }
 
-void SPIDController::setOutputMax(float outMax) {
+void SimplePIDController::setOutputMax(float outMax) {
 	m_maxOutput = outMax;
 }
 
-float SPIDController::limiter(float value, float min, float max) {
+float SimplePIDController::limiter(float value, float min, float max) {
     if (value > max) return max;
     if (value < min) return min;
     return value;
 }
 
-void SPIDController::print() const {
+void SimplePIDController::print() const {
     std::cout << "PID Output        : " << m_pidOutput << "\n"
               << "Error             : " << m_pidData.pError << "\n"
               << "Integral Error    : " << m_pidData.iError << "\n"

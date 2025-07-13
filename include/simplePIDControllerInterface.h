@@ -11,9 +11,9 @@ struct PidState {
     }
 };
 
-class IsPIDController {
+class SimplePIDControllerInterface {
 public:
-    virtual ~IsPIDController() = default;
+    virtual ~SimplePIDControllerInterface() = default;
     virtual float evaluate(float input, float setpoint, float dt) = 0;
     virtual void reset() = 0;
     virtual void setPidGains(float kp, float ki, float kd) = 0;
