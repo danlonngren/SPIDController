@@ -1,8 +1,17 @@
 #pragma once
 
-#include "../include/simplePIDControllerInterface.h"
+struct PidState {
+    float pError = 0.0f;
+    float iError = 0.0f;
+    float dError = 0.0f;
+    float eLast  = 0.0f;
 
-class SimplePIDController : public SimplePIDControllerInterface {
+    void clear() {
+        pError = iError = dError = eLast = 0.0f;
+    }
+};
+
+class SimplePIDController {
 private:
     PidState m_pidData;
     float m_kp, m_ki, m_kd;
