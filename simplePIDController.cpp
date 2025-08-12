@@ -1,7 +1,5 @@
 #include "simplePIDController.h"
 
-#include <iostream>
-
 using namespace std;
 
 SimplePIDController::SimplePIDController(float kp, float ki, float kd, float outMax) :
@@ -59,12 +57,4 @@ float SimplePIDController::limiter(float value, float min, float max) {
     if (value > max) return max;
     if (value < min) return min;
     return value;
-}
-
-void SimplePIDController::print() const {
-    std::cout << "PID Output        : " << m_pidOutput << "\n"
-              << "Error             : " << m_pidData.pError << "\n"
-              << "Integral Error    : " << m_pidData.iError << "\n"
-              << "Derivative Error  : " << m_pidData.dError << "\n"
-              << "Last Error        : " << m_pidData.eLast << "\n" << endl;
 }
