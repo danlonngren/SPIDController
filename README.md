@@ -1,6 +1,7 @@
 # Simple PID controller
+A simple PID controller suitable for bare-metal projects
 
-## Run commands
+## Build and Run instuctions
 ```bash
 # Update gtest
 git submodule update --init --recursive
@@ -16,3 +17,6 @@ cmake --build build
 
 # Run googletests
 GTEST_COLOR=1 ctest --test-dir build --output-on-failure --j 12
+
+# Single Command
+cmake --build build && GTEST_COLOR=1 ctest --test-dir build --output-on-failure --j 12
