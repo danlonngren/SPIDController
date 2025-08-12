@@ -31,6 +31,13 @@ private:
      * Range: 0-1, where 0 means no feedforward and 1 means full feedforward.
      */
     float m_feedForward = 0.0f;
+
+    /**
+     * @brief Coefficient for the derivative filter.
+     * This is used to smooth the derivative term using exponetial moving average.
+     */
+    float m_derivativeFilterCoeff = 0.0f;
+
 public:
     SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax);
     ~SimplePIDController() = default;
@@ -74,8 +81,14 @@ public:
      * @param feedForward Feedforward value to add to the PID output (Range 0-1). 
      * @note 0 means no feedforward, 1 means full feedforward.
      */
-    void setFeedForward(float feedForward);
+    void setFeedForwardGain(float feedForward);
 
+    /**
+     * @brief Set the coefficient for the derivative filter.
+     * @param coeff Coefficient for the derivative filter (0-1).
+     * @note  0 means full filtering, 1 means no filtering.
+     */
+    void setDerivativeFilterCoeff(float coeff);
 
     /**
      * @brief Get the maximum integral error value.
@@ -108,4 +121,6 @@ private:
      * @return Limited value.
      */
     float limiter(float value, float min, float max);
+
+    float exponentialMovingAverage(float current, float previous, float coeff);
 };

@@ -80,7 +80,18 @@ TEST_F(SimplePIDControllerTests, PIDFeedForwardEffect) {
     output = pid.evaluate(0.0f, 10.0f, 1.0f);
     EXPECT_FLOAT_EQ(output, 20.0f);
     pid.reset();
-    pid.setFeedForward(0.5f);
+    pid.setFeedForwardGain(0.5f);
     output = pid.evaluate(0.0f, 10.0f, 1.0f);
+    EXPECT_FLOAT_EQ(output, 25.0f);
+}
+
+TEST_F(SimplePIDControllerTests, PIDDerivativeFilterEffect) {
+    SimplePIDController pid(1.0f, 0.0f, 1.0f, 100.0f, 1000.0f);
+    float output = 0.0f;
+    output = pid.evaluate(0.0f, 10.0f, 1.0f);
+    EXPECT_FLOAT_EQ(output, 10.0f);
+
+    pid.setDerivativeFilterCoeff(0.5f);
+    output = pid.evaluate(0.0f, 20.0f, 1.0f);
     EXPECT_FLOAT_EQ(output, 25.0f);
 }

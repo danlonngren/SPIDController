@@ -7,9 +7,12 @@ SimplePIDController::SimplePIDController(float kp, float ki, float kd, float int
     m_kp(kp), 
     m_ki(ki), 
     m_kd(kd), 
+    m_pidOutput(0.0f),
     m_maxOutput(outMax), 
     m_integralMax(integralMax),
-    m_pidOutput(0.0f) {}
+    m_started(false),
+    m_feedForward(0.0f),
+    m_derivativeFilterCoeff(1.0f) {}
 
 float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     float error = setpoint - input;
@@ -30,9 +33,10 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     m_pidData.iError += error * dt;
     m_pidData.iError = limiter(m_pidData.iError, (-m_integralMax), m_integralMax);
 
-    // Calculate derivative error
-    m_pidData.dError  = (error - m_pidData.eLast) / dt;
-    m_pidData.eLast   = error;
+    // Calculate derivative error and apply exponential moving average filter
+    float rawDError = (error - m_pidData.eLast) / dt;
+    m_pidData.eLast = error;
+    m_pidData.dError = exponentialMovingAverage(rawDError, m_pidData.dError, m_derivativeFilterCoeff);
     
     // PID output calculation
 	m_pidOutput = (m_pidData.pError * m_kp) + 
@@ -67,8 +71,12 @@ void SimplePIDController::setOutputMax(float outMax) {
 	m_maxOutput = outMax;
 }
 
-void SimplePIDController::setFeedForward(float feedForward) { 
+void SimplePIDController::setFeedForwardGain(float feedForward) { 
     m_feedForward = feedForward; 
+}
+
+void SimplePIDController::setDerivativeFilterCoeff(float coeff) {
+    m_derivativeFilterCoeff = limiter(coeff, 0.0f, 1.0f);
 }
 
 // Private methods
@@ -76,4 +84,8 @@ float SimplePIDController::limiter(float value, float min, float max) {
     if (value > max) return max;
     if (value < min) return min;
     return value;
+}
+
+float SimplePIDController::exponentialMovingAverage(float current, float previous, float coeff) {
+    return (coeff * current) + ((1.0f - coeff) * previous);
 }
