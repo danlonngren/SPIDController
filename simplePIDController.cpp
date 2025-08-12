@@ -2,12 +2,13 @@
 
 using namespace std;
 
-SimplePIDController::SimplePIDController(float kp, float ki, float kd, float outMax) :
+SimplePIDController::SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax) :
     m_pidData(), 
     m_kp(kp), 
     m_ki(ki), 
     m_kd(kd), 
     m_maxOutput(outMax), 
+    m_integralMax(integralMax),
     m_pidOutput(0.0f) {}
 
 float SimplePIDController::evaluate(float input, float setpoint, float dt) {
@@ -22,9 +23,14 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
         m_started = true;
         m_pidData.eLast = error;
     }
-            
+    
     m_pidData.pError  = error;
+
+    // Calculate integral error with anti-windup
     m_pidData.iError += error * dt;
+    m_pidData.iError = limiter(m_pidData.iError, (-m_integralMax), m_integralMax);
+
+    // Calculate derivative error
     m_pidData.dError  = (error - m_pidData.eLast) / dt;
     m_pidData.eLast   = error;
     
@@ -41,6 +47,10 @@ void SimplePIDController::reset() {
 	m_pidData.clear();
     m_pidOutput = 0.0f;
     m_started = false;
+}
+
+void SimplePIDController::setIntegralMax(float integralMax) {
+    m_integralMax = integralMax;
 }
 
 void SimplePIDController::setPidGains(float kp, float ki, float kd) {

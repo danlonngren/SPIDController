@@ -1,30 +1,33 @@
 #pragma once
 
-struct PidState {
-    float pError = 0.0f;
-    float iError = 0.0f;
-    float dError = 0.0f;
-    float eLast  = 0.0f;
-
-    void clear() {
-        pError = iError = dError = eLast = 0.0f;
-    }
-};
 
 /**
  * @brief Simple PID Controller implementation.
  */
 class SimplePIDController {
 private:
+    struct PidState {
+        float pError = 0.0f;
+        float iError = 0.0f;
+        float dError = 0.0f;
+        float eLast  = 0.0f;
+
+        void clear() {
+            pError = iError = dError = eLast = 0.0f;
+        }
+    };
+
     PidState m_pidData;
     float m_kp, m_ki, m_kd;
     float m_pidOutput;
     float m_maxOutput;
+    float m_integralMax;
+
 
     bool m_started = false;
 
 public:
-    SimplePIDController(float kp, float ki, float kd, float outMax);
+    SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax);
     ~SimplePIDController() = default;
 
     /**
@@ -51,20 +54,40 @@ public:
 
     /**
      * @brief Set the maximum output limit for the PID controller.
+     * @param integralMax Maximum integral error value.
+     */
+    void setIntegralMax(float integralMax);
+
+    /**
+     * @brief Set the maximum output limit for the PID controller.
      * @param outMax Maximum output value.
      */
     void setOutputMax(float newOutputMax);
 
     /**
+     * @brief Get the maximum integral error value.
+     * @return Maximum integral error value.
+     */
+    inline float getIntegralMax() const { return m_integralMax; }
+
+    /**
+     * @brief Get the maximum output limit for the PID controller.
+     * @return Maximum output value.
+     */
+    inline float getOutputMax() const { return m_maxOutput; }
+
+    /**
      * @brief Get the last PID output value.
      */
-    float getPidLastOutput() const { return m_pidOutput; }
+    inline float getPidOutput() const { return m_pidOutput; }
     
-    /**
-     * @brief Get the current PID state.
-     */
-    const PidState& getState() const { return m_pidData; }
-
 private:
+    /**
+     * @brief Limit the value to a specified range.
+     * @param value Value to limit.
+     * @param min Minimum limit.
+     * @param max Maximum limit.
+     * @return Limited value.
+     */
     float limiter(float value, float min, float max);
 };
