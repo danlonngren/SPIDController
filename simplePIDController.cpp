@@ -39,6 +39,10 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
                   (m_pidData.iError * m_ki) + 
                   (m_pidData.dError * m_kd);
 
+    // Apply feedforward term
+    // This is a simple linear feedforward based on the setpoint
+    m_pidOutput += m_feedForward * setpoint;
+
     m_pidOutput = limiter(m_pidOutput, (-m_maxOutput), m_maxOutput);
 	return m_pidOutput;
 }
@@ -63,6 +67,11 @@ void SimplePIDController::setOutputMax(float outMax) {
 	m_maxOutput = outMax;
 }
 
+void SimplePIDController::setFeedForward(float feedForward) { 
+    m_feedForward = feedForward; 
+}
+
+// Private methods
 float SimplePIDController::limiter(float value, float min, float max) {
     if (value > max) return max;
     if (value < min) return min;

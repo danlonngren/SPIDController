@@ -23,9 +23,14 @@ private:
     float m_maxOutput;
     float m_integralMax;
 
-
     bool m_started = false;
 
+    /**
+     * @brief Feedforward term to be added to the PID output.
+     * This is a simple linear feedforward based on the setpoint.
+     * Range: 0-1, where 0 means no feedforward and 1 means full feedforward.
+     */
+    float m_feedForward = 0.0f;
 public:
     SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax);
     ~SimplePIDController() = default;
@@ -65,6 +70,14 @@ public:
     void setOutputMax(float newOutputMax);
 
     /**
+     * @brief Set the feedforward term.
+     * @param feedForward Feedforward value to add to the PID output (Range 0-1). 
+     * @note 0 means no feedforward, 1 means full feedforward.
+     */
+    void setFeedForward(float feedForward);
+
+
+    /**
      * @brief Get the maximum integral error value.
      * @return Maximum integral error value.
      */
@@ -81,6 +94,11 @@ public:
      */
     inline float getPidOutput() const { return m_pidOutput; }
     
+    /**
+     * @brief Get the feedforward term.
+     * @return Feedforward value.
+     */
+    inline float getFeedForward() const { return m_feedForward; }
 private:
     /**
      * @brief Limit the value to a specified range.

@@ -73,3 +73,14 @@ TEST_F(SimplePIDControllerTests, PIDControllerIntegralWindupLimit) {
 
     EXPECT_FLOAT_EQ(output, 10.0f);
 }
+
+TEST_F(SimplePIDControllerTests, PIDFeedForwardEffect) {
+    SimplePIDController pid(1.0f, 1.0f, 1.0f, 100.0f, 1000.0f);
+    float output = 0.0f;
+    output = pid.evaluate(0.0f, 10.0f, 1.0f);
+    EXPECT_FLOAT_EQ(output, 20.0f);
+    pid.reset();
+    pid.setFeedForward(0.5f);
+    output = pid.evaluate(0.0f, 10.0f, 1.0f);
+    EXPECT_FLOAT_EQ(output, 25.0f);
+}
