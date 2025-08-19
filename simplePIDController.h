@@ -1,5 +1,16 @@
 #pragma once
 
+/**
+ * @brief PID gains structure.
+ */
+struct PidGains {
+    float kp;
+    float ki;
+    float kd;
+
+    PidGains(float p = 0.0f, float i = 0.0f, float d = 0.0f) : kp(p), ki(i), kd(d) {}
+};
+
 
 /**
  * @brief Simple PID Controller implementation.
@@ -18,7 +29,7 @@ private:
     };
 
     PidState m_pidData;
-    float m_kp, m_ki, m_kd;
+    PidGains m_pidGains;
     float m_pidOutput;
     float m_maxOutput;
     float m_integralMax;
@@ -39,7 +50,10 @@ private:
     float m_derivativeFilterCoeff = 0.0f;
 
 public:
-    SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax);
+    /**
+     * @brief Constructor for the SimplePIDController.  
+     */
+    SimplePIDController(PidGains pidGains, float integralMax, float outMax);
     ~SimplePIDController() = default;
 
     /**
@@ -62,7 +76,7 @@ public:
      * @param ki Integral gain.
      * @param kd Derivative gain.
      */
-    void setPidGains(float kp, float ki, float kd);
+    void setPidGains(PidGains pidGains);
 
     /**
      * @brief Set the maximum output limit for the PID controller.
