@@ -1,0 +1,37 @@
+name: Auto Tag with Timestamp
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  timestamp-tag:
+    name: Create Timestamp-Based Tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Generate timestamp tag
+        id: make_tag
+        run: |
+          DATE=$(date -u +"%Y%m%d")
+          SECONDS=$(date -u +%s)
+          SECONDS_OF_DAY=$((SECONDS % 86400))
+          TAG="v${DATE}-${SECONDS_OF_DAY}"
+          echo "Generated tag: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Create and push tag
+        run: |
+          git tag ${{ steps.make_tag.outputs.tag }}
+          git push origin ${{ steps.make_tag.outputs.tag }}
