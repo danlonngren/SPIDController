@@ -2,11 +2,9 @@
 
 using namespace std;
 
-SimplePIDController::SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax) :
+SimplePIDController::SimplePIDController(PidGains pidGains, float integralMax, float outMax) :
     m_pidData(), 
-    m_kp(kp), 
-    m_ki(ki), 
-    m_kd(kd), 
+    m_pidGains(pidGains),
     m_pidOutput(0.0f),
     m_maxOutput(outMax), 
     m_integralMax(integralMax),
@@ -39,9 +37,9 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     m_pidData.dError = exponentialMovingAverage(rawDError, m_pidData.dError, m_derivativeFilterCoeff);
     
     // PID output calculation
-	m_pidOutput = (m_pidData.pError * m_kp) + 
-                  (m_pidData.iError * m_ki) + 
-                  (m_pidData.dError * m_kd);
+	m_pidOutput = (m_pidData.pError * m_pidGains.kp) + 
+                  (m_pidData.iError * m_pidGains.ki) + 
+                  (m_pidData.dError * m_pidGains.kd);
 
     // Apply feedforward term
     // This is a simple linear feedforward based on the setpoint
@@ -61,10 +59,8 @@ void SimplePIDController::setIntegralMax(float integralMax) {
     m_integralMax = integralMax;
 }
 
-void SimplePIDController::setPidGains(float kp, float ki, float kd) {
-	m_kp = kp;
-	m_ki = ki;
-	m_kd = kd;
+void SimplePIDController::setPidGains(PidGains pidGains) {
+	m_pidGains = pidGains;
 }
 
 void SimplePIDController::setOutputMax(float outMax) {
