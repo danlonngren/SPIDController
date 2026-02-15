@@ -3,7 +3,10 @@
 #include <algorithm>
 
 
-SimplePIDController::SimplePIDController(float integralMax, float outMax) :
+SimplePIDController::SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax) :
+    m_kp(kp),
+    m_ki(ki),
+    m_kd(kd),
     m_maxOutput(outMax), 
     m_integralMax(integralMax) {}
 
@@ -23,11 +26,11 @@ float SimplePIDController::evaluate(float measurement, float setpoint, float dt,
     
     // --- Proportinal ---
     m_pidData.pError  = error;
-
+    
     // --- Integral ---
     m_pidData.iError += error * dt;
     m_pidData.iError = std::clamp(m_pidData.iError, -m_integralMax, m_integralMax);
-
+    
     // --- Derivative ---
     float rawDError = -(measurement - m_pidData.eLast) / dt;
     m_pidData.eLast = measurement;

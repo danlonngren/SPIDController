@@ -5,6 +5,9 @@
  * @brief Simple PID Controller implementation.
  */
 class SimplePIDController {
+public:
+    enum class DerivativeMode { Measurement, Error };
+
 private:
     struct PidState {
         float pError = 0.0f;
@@ -17,18 +20,16 @@ private:
         }
     };
 
+    // PID gains
+    float m_kp;
+    float m_ki;
+    float m_kd;
     float m_maxOutput;
     float m_integralMax;
     
     // PID State
     PidState m_pidData;
     float m_pidOutput{0.0f};
-
-    // PID gains
-    float m_kp{1.0f};
-    float m_ki{1.0f};
-    float m_kd{1.0f};
-
 
     bool m_started{false};
 
@@ -50,7 +51,7 @@ public:
     /**
      * @brief Constructor for the SimplePIDController.  
      */
-    SimplePIDController(float integralMax, float outMax);
+    SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax);
     ~SimplePIDController() = default;
 
     /**
