@@ -56,7 +56,7 @@ public:
 
     /**
      * @brief Evaluate the PID controller with the given input and setpoint.
-     * @param input Current value to control.
+     * @param measurement Current value to control.
      * @param setpoint Desired value to achieve.
      * @param dt Time step since the last evaluation.
      * @param feedForwardVal Optional feedforward contribution (already scaled to output units).
