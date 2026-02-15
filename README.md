@@ -16,7 +16,7 @@ cmake -S . -B build -DBUILD_TESTS=ON
 cmake --build build
 
 # Run googletests
-GTEST_COLOR=1 ctest --test-dir build --output-on-failure --j 12
+GTEST_COLOR=1 ctest --test-dir build --output-on-failure
 
-# Single Command
-cmake --build build && GTEST_COLOR=1 ctest --test-dir build --output-on-failure --j 12
+# Build and run
+cmake --build build && GTEST_COLOR=1 ctest --test-dir build --output-on-failure
