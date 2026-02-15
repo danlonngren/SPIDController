@@ -29,7 +29,7 @@ float SimplePIDController::evaluate(float error, float dt, float feedForwardVal)
     // Calculate derivative error and apply exponential moving average filter
     float rawDError = (error - m_pidData.eLast) / dt;
     m_pidData.eLast = error;
-    m_pidData.dError = exponentialMovingAverage(rawDError, m_pidData.dError, m_derivativeFilterCoeff);
+    m_pidData.dError = derivativeFilter(rawDError, m_pidData.dError, dt);
     
     // PID output calculation
     // Apply feedforward m_feedForward
@@ -50,5 +50,5 @@ void SimplePIDController::reset() {
 }
 
 void SimplePIDController::setDerivativeFilterCoeff(float coeff) {
-    m_derivativeFilterCoeff = std::clamp(coeff, 0.0f, 1.0f);
+    m_derivativeTau = std::clamp(coeff, 0.0f, 1.0f);
 }

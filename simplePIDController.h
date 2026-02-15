@@ -42,8 +42,9 @@ private:
     /**
      * @brief Coefficient for the derivative filter.
      * This is used to smooth the derivative term using exponential moving average.
+     * @note Range is from [0,1] where 0 is no filtring and 1 heavy smoothing
      */
-    float m_derivativeFilterCoeff{1.0f};
+    float m_derivativeTau{0.1f};
 
 public:
     /**
@@ -112,7 +113,9 @@ public:
 
 private:
 
-    float exponentialMovingAverage(float current, float previous, float coeff) {
-        return (coeff * current) + ((1.0f - coeff) * previous);
+    float derivativeFilter(float current, float previous, float dt) {
+        // Compute alpha in a descrete form
+        float alpha = dt / (m_derivativeTau + dt);
+        return (alpha * current) + ((1.0f - alpha) * previous);
     }
 };
