@@ -7,28 +7,30 @@ SimplePIDController::SimplePIDController(float integralMax, float outMax) :
     m_maxOutput(outMax), 
     m_integralMax(integralMax) {}
 
-float SimplePIDController::evaluate(float error, float dt, float feedForwardVal) {
-    // float error = setpoint - input;
-    
-    // Avoid division by zero
-    if (dt <= 0.0f) return m_pidOutput;
+float SimplePIDController::evaluate(float measurement, float setpoint, float dt, float feedForwardVal) {
+    // Protect against small dt
+    constexpr float MIN_DT = 1e-6f;
+    dt = std::max(dt, MIN_DT);
+
+    float error = setpoint - measurement;
   
     // If we just started, initialize the last error
     // This prevents a large spike in the first output
     if (!m_started) {
         m_started = true;
-        m_pidData.eLast = error;
+        m_pidData.eLast = measurement;
     }
     
+    // --- Proportinal ---
     m_pidData.pError  = error;
 
-    // Calculate integral error with anti-windup
+    // --- Integral ---
     m_pidData.iError += error * dt;
-    m_pidData.iError = std::clamp(m_pidData.iError, (-m_integralMax), m_integralMax);
+    m_pidData.iError = std::clamp(m_pidData.iError, -m_integralMax, m_integralMax);
 
-    // Calculate derivative error and apply exponential moving average filter
-    float rawDError = (error - m_pidData.eLast) / dt;
-    m_pidData.eLast = error;
+    // --- Derivative ---
+    float rawDError = -(measurement - m_pidData.eLast) / dt;
+    m_pidData.eLast = measurement;
     m_pidData.dError = derivativeFilter(rawDError, m_pidData.dError, dt);
     
     // PID output calculation
@@ -49,6 +51,12 @@ void SimplePIDController::reset() {
     m_started = false;
 }
 
-void SimplePIDController::setDerivativeFilterCoeff(float coeff) {
-    m_derivativeTau = std::clamp(coeff, 0.0f, 1.0f);
+void SimplePIDController::setDerivativeFilterTau(float tau) {
+    m_derivativeTau = std::max(tau, 0.0f);
+}
+
+float SimplePIDController::derivativeFilter(float current, float previous, float dt)
+{
+    float alpha = dt / (m_derivativeTau + dt);
+    return (alpha * current) + ((1.0f - alpha) * previous);
 }

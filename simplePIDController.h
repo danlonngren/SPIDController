@@ -40,9 +40,9 @@ private:
     float m_feedForward{0.0f};
 
     /**
-     * @brief Coefficient for the derivative filter.
-     * This is used to smooth the derivative term using exponential moving average.
-     * @note Range is from [0,1] where 0 is no filtring and 1 heavy smoothing
+     * @brief Time constant for derivative low-pass filter (seconds).
+     * Larger tau = more smoothing.
+     * tau = 0 disables filtering.
      */
     float m_derivativeTau{0.1f};
 
@@ -60,7 +60,7 @@ public:
      * @param dt Time step since the last evaluation.
      * @return PID output value, limited to the maximum output.
      */
-    float evaluate(float error, float dt, float feedForwardVal=0.0f);
+    float evaluate(float measurement, float setpoint, float dt, float feedForwardVal=0.0f);
 
     /**
      * @brief Reset the PID controller state.
@@ -68,11 +68,11 @@ public:
     void reset();
 
     /**
-     * @brief Set the coefficient for the derivative filter.
-     * @param coeff Coefficient for the derivative filter (0-1).
-     * @note  0 means full filtering, 1 means no filtering.
+     * @brief Set derivative filter time constant (seconds).
+     * @param tau Time constant in seconds. 
+     *        tau = 0 -> no filtering
      */
-    void setDerivativeFilterCoeff(float coeff);
+    void setDerivativeFilterTau(float tau);
 
     /**
      * @brief Set the PID gains.
@@ -112,10 +112,5 @@ public:
     inline float getFeedForward() const { return m_feedForward; }
 
 private:
-
-    float derivativeFilter(float current, float previous, float dt) {
-        // Compute alpha in a descrete form
-        float alpha = dt / (m_derivativeTau + dt);
-        return (alpha * current) + ((1.0f - alpha) * previous);
-    }
+    float derivativeFilter(float current, float previous, float dt);
 };
