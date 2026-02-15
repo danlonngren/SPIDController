@@ -7,8 +7,8 @@ SimplePIDController::SimplePIDController(float integralMax, float outMax) :
     m_maxOutput(outMax), 
     m_integralMax(integralMax) {}
 
-float SimplePIDController::evaluate(float input, float setpoint, float dt) {
-    float error = setpoint - input;
+float SimplePIDController::evaluate(float error, float dt, float feedForwardVal) {
+    // float error = setpoint - input;
     
     // Avoid division by zero
     if (dt <= 0.0f) return m_pidOutput;
@@ -32,13 +32,12 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     m_pidData.dError = exponentialMovingAverage(rawDError, m_pidData.dError, m_derivativeFilterCoeff);
     
     // PID output calculation
+    // Apply feedforward m_feedForward
+    // This is a simple linear feedforward based on the setpoint
 	m_pidOutput = (m_pidData.pError * m_kp) + 
                   (m_pidData.iError * m_ki) + 
-                  (m_pidData.dError * m_kd);
-
-    // Apply feedforward term
-    // This is a simple linear feedforward based on the setpoint
-    m_pidOutput += m_feedForward * setpoint;
+                  (m_pidData.dError * m_kd) +
+                  (m_feedForward * feedForwardVal);
 
     m_pidOutput = std::clamp(m_pidOutput, (-m_maxOutput), m_maxOutput);
 	return m_pidOutput;

@@ -59,7 +59,7 @@ public:
      * @param dt Time step since the last evaluation.
      * @return PID output value, limited to the maximum output.
      */
-    float evaluate(float input, float setpoint, float dt);
+    float evaluate(float error, float dt, float feedForwardVal=0.0f);
 
     /**
      * @brief Reset the PID controller state.
