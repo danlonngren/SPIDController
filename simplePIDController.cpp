@@ -69,6 +69,11 @@ void SimplePIDController::reset() {
     m_started = false;
 }
 
+void SimplePIDController::resetIntegral()
+{
+    m_pidData.iError = 0.0f;
+}
+
 void SimplePIDController::setDerivativeFilterTau(float tau) {
     m_derivativeTau = std::max(tau, 0.0f);
 }

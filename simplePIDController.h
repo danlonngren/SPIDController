@@ -70,6 +70,11 @@ public:
      * @brief Reset the PID controller state.
      */
     void reset();
+    
+    /**
+     * @brief Reset integral error.
+     */
+    void resetIntegral();
 
     /**
      * @brief Set derivative filter time constant (seconds).
