@@ -42,7 +42,7 @@ float SimplePIDController::evaluate(float measurement, float setpoint, float dt,
 	m_pidOutput = (m_pidData.pError * m_kp) + 
                   (m_pidData.iError * m_ki) + 
                   (m_pidData.dError * m_kd) +
-                  (m_feedForward * feedForwardVal);
+                  feedForwardVal;
 
     m_pidOutput = std::clamp(m_pidOutput, (-m_maxOutput), m_maxOutput);
 	return m_pidOutput;

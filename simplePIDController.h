@@ -34,13 +34,6 @@ private:
     bool m_started{false};
 
     /**
-     * @brief Feedforward term to be added to the PID output.
-     * This is a simple linear feedforward based on the setpoint.
-     * Range: 0-1, where 0 means no feedforward and 1 means full feedforward.
-     */
-    float m_feedForward{0.0f};
-
-    /**
      * @brief Time constant for derivative low-pass filter (seconds).
      * Larger tau = more smoothing.
      * tau = 0 disables filtering.
@@ -59,7 +52,10 @@ public:
      * @param input Current value to control.
      * @param setpoint Desired value to achieve.
      * @param dt Time step since the last evaluation.
-     * @return PID output value, limited to the maximum output.
+     * @param feedForwardVal Optional feedforward contribution (already scaled to output units).
+     *        Typically computed from desired setpoint derivatives (e.g., velocity, acceleration)
+     *        or other predictable disturbances. Defaults to 0 (no feedforward).
+     * @return PID output value, limited to [-m_maxOutput, m_maxOutput].
      */
     float evaluate(float measurement, float setpoint, float dt, float feedForwardVal=0.0f);
 
@@ -98,19 +94,11 @@ public:
     void setOutputMax(float newOutputMax) { m_maxOutput = newOutputMax; }
 
     /**
-     * @brief Set the feedforward term.
-     * @param feedForward Feedforward value to add to the PID output (Range 0-1). 
-     * @note 0 means no feedforward, 1 means full feedforward.
-     */
-    void setFeedForwardGain(float feedForward) { m_feedForward = feedForward; }
-
-    /**
      * @brief Getters
      */
     inline float getIntegralMax() const { return m_integralMax; }
     inline float getOutputMax() const { return m_maxOutput; }
     inline float getPidOutput() const { return m_pidOutput; }
-    inline float getFeedForward() const { return m_feedForward; }
 
 private:
     float derivativeFilter(float current, float previous, float dt);
