@@ -17,6 +17,10 @@ private:
         }
     };
 
+    float m_maxOutput;
+    float m_integralMax;
+    
+    // PID State
     PidState m_pidData;
 
     // PID gains
@@ -24,9 +28,7 @@ private:
     float m_ki{1.0f};
     float m_kd{1.0f};
 
-    float m_pidOutput;
-    float m_maxOutput;
-    float m_integralMax;
+    float m_pidOutput{0.0f};
 
     bool m_started{false};
 
@@ -35,13 +37,13 @@ private:
      * This is a simple linear feedforward based on the setpoint.
      * Range: 0-1, where 0 means no feedforward and 1 means full feedforward.
      */
-    float m_feedForward = 0.0f;
+    float m_feedForward{0.0f};
 
     /**
      * @brief Coefficient for the derivative filter.
      * This is used to smooth the derivative term using exponetial moving average.
      */
-    float m_derivativeFilterCoeff = 0.0f;
+    float m_derivativeFilterCoeff{1.0f};
 
 public:
     /**
@@ -122,14 +124,6 @@ public:
     inline float getFeedForward() const { return m_feedForward; }
 
 private:
-    /**
-     * @brief Limit the value to a specified range.
-     * @param value Value to limit.
-     * @param min Minimum limit.
-     * @param max Maximum limit.
-     * @return Limited value.
-     */
-    float limiter(float value, float min, float max);
 
     float exponentialMovingAverage(float current, float previous, float coeff);
 };

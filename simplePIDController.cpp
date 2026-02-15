@@ -1,15 +1,11 @@
 #include "simplePIDController.h"
 
+#include <algorithm>
 #include <iostream>
 
 SimplePIDController::SimplePIDController(float integralMax, float outMax) :
-    m_pidData(), 
-    m_pidOutput(0.0f),
     m_maxOutput(outMax), 
-    m_integralMax(integralMax),
-    m_started(false),
-    m_feedForward(0.0f),
-    m_derivativeFilterCoeff(1.0f) {}
+    m_integralMax(integralMax) {}
 
 float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     float error = setpoint - input;
@@ -28,7 +24,7 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
 
     // Calculate integral error with anti-windup
     m_pidData.iError += error * dt;
-    m_pidData.iError = limiter(m_pidData.iError, (-m_integralMax), m_integralMax);
+    m_pidData.iError = std::clamp(m_pidData.iError, (-m_integralMax), m_integralMax);
 
     // Calculate derivative error and apply exponential moving average filter
     float rawDError = (error - m_pidData.eLast) / dt;
@@ -44,7 +40,7 @@ float SimplePIDController::evaluate(float input, float setpoint, float dt) {
     // This is a simple linear feedforward based on the setpoint
     m_pidOutput += m_feedForward * setpoint;
 
-    m_pidOutput = limiter(m_pidOutput, (-m_maxOutput), m_maxOutput);
+    m_pidOutput = std::clamp(m_pidOutput, (-m_maxOutput), m_maxOutput);
 	return m_pidOutput;
 }
 
@@ -73,14 +69,7 @@ void SimplePIDController::setFeedForwardGain(float feedForward) {
 }
 
 void SimplePIDController::setDerivativeFilterCoeff(float coeff) {
-    m_derivativeFilterCoeff = limiter(coeff, 0.0f, 1.0f);
-}
-
-// Private methods
-float SimplePIDController::limiter(float value, float min, float max) {
-    if (value > max) return max;
-    if (value < min) return min;
-    return value;
+    m_derivativeFilterCoeff = std::clamp(coeff, 0.0f, 1.0f);
 }
 
 float SimplePIDController::exponentialMovingAverage(float current, float previous, float coeff) {
