@@ -32,7 +32,6 @@ private:
 
     // PID State
     PidState m_pidState;
-    float m_pidOutput{0.0f};
 
     bool m_started{false};
 
@@ -116,7 +115,7 @@ public:
      */
     inline float getIntegralMax() const { return m_integralMax; }
     inline float getOutputMax() const { return m_outputMax; }
-    inline float getPidOutput() const { return m_pidOutput; }
+    inline float getPidOutput() const { return m_pidState.output; }
 
 private:
     float derivativeFilter(float current, float previous, float dt);
