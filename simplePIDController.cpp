@@ -1,7 +1,7 @@
 #include "simplePIDController.h"
 
 #include <algorithm>
-#include <iostream>
+
 
 SimplePIDController::SimplePIDController(float integralMax, float outMax) :
     m_maxOutput(outMax), 
