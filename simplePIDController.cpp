@@ -50,28 +50,6 @@ void SimplePIDController::reset() {
     m_started = false;
 }
 
-void SimplePIDController::setIntegralMax(float integralMax) {
-    m_integralMax = integralMax;
-}
-
-void SimplePIDController::setPidGains(float kp, float ki, float kd) {
-    m_kp = kp;
-    m_ki = ki;
-    m_kd = kd;
-}
-
-void SimplePIDController::setOutputMax(float outMax) {
-	m_maxOutput = outMax;
-}
-
-void SimplePIDController::setFeedForwardGain(float feedForward) { 
-    m_feedForward = feedForward; 
-}
-
 void SimplePIDController::setDerivativeFilterCoeff(float coeff) {
     m_derivativeFilterCoeff = std::clamp(coeff, 0.0f, 1.0f);
-}
-
-float SimplePIDController::exponentialMovingAverage(float current, float previous, float coeff) {
-    return (coeff * current) + ((1.0f - coeff) * previous);
 }

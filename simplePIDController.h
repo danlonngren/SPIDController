@@ -22,13 +22,13 @@ private:
     
     // PID State
     PidState m_pidData;
+    float m_pidOutput{0.0f};
 
     // PID gains
     float m_kp{1.0f};
     float m_ki{1.0f};
     float m_kd{1.0f};
 
-    float m_pidOutput{0.0f};
 
     bool m_started{false};
 
@@ -41,7 +41,7 @@ private:
 
     /**
      * @brief Coefficient for the derivative filter.
-     * This is used to smooth the derivative term using exponetial moving average.
+     * This is used to smooth the derivative term using exponential moving average.
      */
     float m_derivativeFilterCoeff{1.0f};
 
@@ -67,33 +67,6 @@ public:
     void reset();
 
     /**
-     * @brief Set the PID gains.
-     * @param kp Proportional gain.
-     * @param ki Integral gain.
-     * @param kd Derivative gain.
-     */
-    void setPidGains(float kp, float ki, float kd);
-
-    /**
-     * @brief Set the maximum output limit for the PID controller.
-     * @param integralMax Maximum integral error value.
-     */
-    void setIntegralMax(float integralMax);
-
-    /**
-     * @brief Set the maximum output limit for the PID controller.
-     * @param outMax Maximum output value.
-     */
-    void setOutputMax(float newOutputMax);
-
-    /**
-     * @brief Set the feedforward term.
-     * @param feedForward Feedforward value to add to the PID output (Range 0-1). 
-     * @note 0 means no feedforward, 1 means full feedforward.
-     */
-    void setFeedForwardGain(float feedForward);
-
-    /**
      * @brief Set the coefficient for the derivative filter.
      * @param coeff Coefficient for the derivative filter (0-1).
      * @note  0 means full filtering, 1 means no filtering.
@@ -101,29 +74,45 @@ public:
     void setDerivativeFilterCoeff(float coeff);
 
     /**
-     * @brief Get the maximum integral error value.
-     * @return Maximum integral error value.
+     * @brief Set the PID gains.
+     * @param kp Proportional gain.
+     * @param ki Integral gain.
+     * @param kd Derivative gain.
+     */
+    void setPidGains(float kp, float ki, float kd) {
+        m_kp = kp; m_ki = ki; m_kd = kd;
+    }
+
+    /**
+     * @brief Set the maximum output limit for the PID controller.
+     * @param integralMax Maximum integral error value.
+     */
+    void setIntegralMax(float integralMax) { m_integralMax = integralMax; }
+
+    /**
+     * @brief Set the maximum output limit for the PID controller.
+     * @param outMax Maximum output value.
+     */
+    void setOutputMax(float newOutputMax) { m_maxOutput = newOutputMax; }
+
+    /**
+     * @brief Set the feedforward term.
+     * @param feedForward Feedforward value to add to the PID output (Range 0-1). 
+     * @note 0 means no feedforward, 1 means full feedforward.
+     */
+    void setFeedForwardGain(float feedForward) { m_feedForward = feedForward; }
+
+    /**
+     * @brief Getters
      */
     inline float getIntegralMax() const { return m_integralMax; }
-
-    /**
-     * @brief Get the maximum output limit for the PID controller.
-     * @return Maximum output value.
-     */
     inline float getOutputMax() const { return m_maxOutput; }
-
-    /**
-     * @brief Get the last PID output value.
-     */
     inline float getPidOutput() const { return m_pidOutput; }
-    
-    /**
-     * @brief Get the feedforward term.
-     * @return Feedforward value.
-     */
     inline float getFeedForward() const { return m_feedForward; }
 
 private:
 
-    float exponentialMovingAverage(float current, float previous, float coeff);
+    float exponentialMovingAverage(float current, float previous, float coeff) {
+        return (coeff * current) + ((1.0f - coeff) * previous);
+    }
 };
