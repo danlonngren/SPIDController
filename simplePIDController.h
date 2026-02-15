@@ -24,9 +24,12 @@ private:
     float m_kp;
     float m_ki;
     float m_kd;
+    
     float m_maxOutput;
     float m_integralMax;
     
+    const DerivativeMode m_derivativeMode;
+
     // PID State
     PidState m_pidData;
     float m_pidOutput{0.0f};
@@ -44,7 +47,11 @@ public:
     /**
      * @brief Constructor for the SimplePIDController.  
      */
-    SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax);
+    SimplePIDController(
+        float kp, float ki, float kd, 
+        float integralMax, 
+        float outMax, 
+        DerivativeMode dMode = DerivativeMode::Measurement);
     ~SimplePIDController() = default;
 
     /**

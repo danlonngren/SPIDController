@@ -3,12 +3,17 @@
 #include <algorithm>
 
 
-SimplePIDController::SimplePIDController(float kp, float ki, float kd, float integralMax, float outMax) :
-    m_kp(kp),
-    m_ki(ki),
-    m_kd(kd),
-    m_maxOutput(outMax), 
-    m_integralMax(integralMax) {}
+SimplePIDController::SimplePIDController(
+    float kp, float ki, float kd, 
+    float integralMax, 
+    float outMax, 
+    DerivativeMode dMode) 
+    : m_kp(kp),
+      m_ki(ki),
+      m_kd(kd),
+      m_maxOutput(outMax), 
+      m_integralMax(integralMax),
+      m_derivativeMode(dMode) {}
 
 float SimplePIDController::evaluate(float measurement, float setpoint, float dt, float feedForwardVal) {
     // Protect against small dt
@@ -16,12 +21,13 @@ float SimplePIDController::evaluate(float measurement, float setpoint, float dt,
     dt = std::max(dt, MIN_DT);
 
     float error = setpoint - measurement;
-  
+    
     // If we just started, initialize the last error
     // This prevents a large spike in the first output
     if (!m_started) {
         m_started = true;
-        m_pidData.eLast = measurement;
+        m_pidData.eLast = m_derivativeMode == DerivativeMode::Measurement 
+            ? measurement : error;
     }
     
     // --- Proportinal ---
@@ -32,9 +38,18 @@ float SimplePIDController::evaluate(float measurement, float setpoint, float dt,
     m_pidData.iError = std::clamp(m_pidData.iError, -m_integralMax, m_integralMax);
     
     // --- Derivative ---
-    float rawDError = -(measurement - m_pidData.eLast) / dt;
-    m_pidData.eLast = measurement;
-    m_pidData.dError = derivativeFilter(rawDError, m_pidData.dError, dt);
+    if (m_derivativeMode == DerivativeMode::Measurement)
+    {
+        float rawDError = -(measurement - m_pidData.eLast) / dt;
+        m_pidData.eLast = measurement;
+        m_pidData.dError = derivativeFilter(rawDError, m_pidData.dError, dt);
+    } 
+    else
+    {
+        float rawDError = (error - m_pidData.eLast) / dt;
+        m_pidData.eLast = error;
+        m_pidData.dError = derivativeFilter(rawDError, m_pidData.dError, dt);
+    }
     
     // PID output calculation
     // Apply feedforward m_feedForward
