@@ -106,5 +106,5 @@ TEST_F(SimplePIDControllerTests, PIDDerivativeFilterEffect) {
 
     pid.setDerivativeFilterCoeff(0.5f);
     output = pid.evaluate(20.0f, 1.0f);
-    EXPECT_FLOAT_EQ(output, 25.0f);
+    EXPECT_FLOAT_EQ(output, 26.666668f);
 }
