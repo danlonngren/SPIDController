@@ -10,13 +10,13 @@ public:
 
 private:
     struct PidState {
-        float pError = 0.0f;
-        float iError = 0.0f;
-        float dError = 0.0f;
-        float eLast  = 0.0f;
-
+        float p{0.0f};
+        float i{0.0f};
+        float d{0.0f};
+        float last{0.0f};
+        float output{0.0f};
         void clear() {
-            pError = iError = dError = eLast = 0.0f;
+            p = i = d = last = output = 0.0f;
         }
     };
 
@@ -25,13 +25,13 @@ private:
     float m_ki;
     float m_kd;
     
-    float m_maxOutput;
+    float m_outputMax;
     float m_integralMax;
     
     const DerivativeMode m_derivativeMode;
 
     // PID State
-    PidState m_pidData;
+    PidState m_pidState;
     float m_pidOutput{0.0f};
 
     bool m_started{false};
@@ -45,12 +45,18 @@ private:
 
 public:
     /**
-     * @brief Constructor for the SimplePIDController.  
+     * @brief Constructor for the SimplePIDController.
+     * @param kp Proportional gain  
+     * @param ki Integral gain  
+     * @param kD Derivitive gain
+     * @param integralMax Max value for integral error to prevent i windup
+     * @param outputMax Max output value allowed
+     * @param dMode Derivitive method used. Measurement or Error based
      */
     SimplePIDController(
         float kp, float ki, float kd, 
         float integralMax, 
-        float outMax, 
+        float outputMax, 
         DerivativeMode dMode = DerivativeMode::Measurement);
     ~SimplePIDController() = default;
 
@@ -62,7 +68,7 @@ public:
      * @param feedForwardVal Optional feedforward contribution (already scaled to output units).
      *        Typically computed from desired setpoint derivatives (e.g., velocity, acceleration)
      *        or other predictable disturbances. Defaults to 0 (no feedforward).
-     * @return PID output value, limited to [-m_maxOutput, m_maxOutput].
+     * @return PID output value, limited to [-m_outputMax, m_outputMax].
      */
     float evaluate(float measurement, float setpoint, float dt, float feedForwardVal=0.0f);
 
@@ -103,13 +109,13 @@ public:
      * @brief Set the maximum output limit for the PID controller.
      * @param outMax Maximum output value.
      */
-    void setOutputMax(float newOutputMax) { m_maxOutput = newOutputMax; }
+    void setOutputMax(float newOutputMax) { m_outputMax = newOutputMax; }
 
     /**
      * @brief Getters
      */
     inline float getIntegralMax() const { return m_integralMax; }
-    inline float getOutputMax() const { return m_maxOutput; }
+    inline float getOutputMax() const { return m_outputMax; }
     inline float getPidOutput() const { return m_pidOutput; }
 
 private:
