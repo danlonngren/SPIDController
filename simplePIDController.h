@@ -8,41 +8,6 @@ class SimplePIDController {
 public:
     enum class DerivativeMode { Measurement, Error };
 
-private:
-    struct PidState {
-        float p{0.0f};
-        float i{0.0f};
-        float d{0.0f};
-        float last{0.0f};
-        float output{0.0f};
-        void clear() {
-            p = i = d = last = output = 0.0f;
-        }
-    };
-
-    // PID gains
-    float m_kp;
-    float m_ki;
-    float m_kd;
-    
-    float m_outputMax;
-    float m_integralMax;
-    
-    const DerivativeMode m_derivativeMode;
-
-    // PID State
-    PidState m_pidState;
-
-    bool m_started{false};
-
-    /**
-     * @brief Time constant for derivative low-pass filter (seconds).
-     * Larger tau = more smoothing.
-     * tau = 0 disables filtering.
-     */
-    float m_derivativeTau{0.1f};
-
-public:
     /**
      * @brief Constructor for the SimplePIDController.
      * @param kp Proportional gain  
@@ -57,7 +22,6 @@ public:
         float integralMax, 
         float outputMax, 
         DerivativeMode dMode = DerivativeMode::Measurement);
-    ~SimplePIDController() = default;
 
     /**
      * @brief Evaluate the PID controller with the given input and setpoint.
@@ -119,4 +83,37 @@ public:
 
 private:
     float derivativeFilter(float current, float previous, float dt);
+
+    struct PidState {
+        float p{0.0f};
+        float i{0.0f};
+        float d{0.0f};
+        float last{0.0f};
+        float output{0.0f};
+        void clear() {
+            p = i = d = last = output = 0.0f;
+        }
+    };
+
+    // PID gains
+    float m_kp;
+    float m_ki;
+    float m_kd;
+    
+    float m_outputMax;
+    float m_integralMax;
+    
+    const DerivativeMode m_derivativeMode;
+
+    PidState m_pidState;
+
+    bool m_started{false};
+
+    /**
+     * @brief Time constant for derivative low-pass filter (seconds).
+     * Larger tau = more smoothing.
+     * tau = 0 disables filtering.
+     */
+    float m_derivativeTau{0.1f};
+
 };
