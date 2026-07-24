@@ -38,18 +38,18 @@ float SimplePIDController::evaluate(float measurement, float setpoint, float dt,
     m_pidState.i = std::clamp(m_pidState.i, -m_integralMax, m_integralMax);
     
     // --- Derivative ---
+    float rawDError = 0.0f;
     if (m_derivativeMode == DerivativeMode::Measurement)
     {
-        float rawd = -(measurement - m_pidState.last) / dt;
+        rawDError = -(measurement - m_pidState.last) / dt;
         m_pidState.last = measurement;
-        m_pidState.d = derivativeFilter(rawd, m_pidState.d, dt);
     } 
     else
     {
-        float rawd = (error - m_pidState.last) / dt;
+        rawDError = (error - m_pidState.last) / dt;
         m_pidState.last = error;
-        m_pidState.d = derivativeFilter(rawd, m_pidState.d, dt);
     }
+    m_pidState.d = derivativeFilter(rawDError, m_pidState.d, dt);
     
     // PID output calculation
     // Apply feedforward m_feedForward
