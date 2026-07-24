@@ -3,17 +3,8 @@
 #include <algorithm>
 
 
-SimplePIDController::SimplePIDController(
-    float kp, float ki, float kd, 
-    float integralMax, 
-    float outputMax, 
-    DerivativeMode dMode) 
-    : m_kp(kp),
-      m_ki(ki),
-      m_kd(kd),
-      m_outputMax(outputMax), 
-      m_integralMax(integralMax),
-      m_derivativeMode(dMode) {}
+SimplePIDController::SimplePIDController(const PIDConfig& config) 
+    : m_config(config) {}
 
 float SimplePIDController::evaluate(float measurement, float setpoint, float dt, float feedForwardVal) {
     // Protect against small dt
@@ -26,59 +17,59 @@ float SimplePIDController::evaluate(float measurement, float setpoint, float dt,
     // This prevents a large spike in the first output
     if (!m_started) {
         m_started = true;
-        m_pidState.last = m_derivativeMode == DerivativeMode::Measurement 
+        m_lastMeasurement = m_config.derivativeMode == DerivativeMode::Measurement 
             ? measurement : error;
     }
     
     // --- Proportinal ---
-    m_pidState.p  = error;
+    m_term.p  = error;
     
     // --- Integral ---
-    m_pidState.i += error * dt;
-    m_pidState.i = std::clamp(m_pidState.i, -m_integralMax, m_integralMax);
+    m_term.i += error * dt;
+    m_term.i = std::clamp(m_term.i, -m_config.integralLimit, m_config.integralLimit);
     
     // --- Derivative ---
     float rawDError = 0.0f;
-    if (m_derivativeMode == DerivativeMode::Measurement)
+    if (m_config.derivativeMode == DerivativeMode::Measurement)
     {
-        rawDError = -(measurement - m_pidState.last) / dt;
-        m_pidState.last = measurement;
+        rawDError = -(measurement - m_lastMeasurement) / dt;
+        m_lastMeasurement = measurement;
     } 
     else
     {
-        rawDError = (error - m_pidState.last) / dt;
-        m_pidState.last = error;
+        rawDError = (error - m_lastMeasurement) / dt;
+        m_lastMeasurement = error;
     }
-    m_pidState.d = derivativeFilter(rawDError, m_pidState.d, dt);
+    m_term.d = derivativeFilter(rawDError, m_term.d, dt);
     
     // PID output calculation
     // Apply feedforward m_feedForward
     // This is a simple linear feedforward based on the setpoint
-	m_pidState.output = (m_pidState.p * m_kp) + 
-                        (m_pidState.i * m_ki) + 
-                        (m_pidState.d * m_kd) +
+	m_term.output = (m_term.p * m_config.gains.kp) + 
+                        (m_term.i * m_config.gains.ki) + 
+                        (m_term.d * m_config.gains.kd) +
                         feedForwardVal;
 
-    m_pidState.output = std::clamp(m_pidState.output, (-m_outputMax), m_outputMax);
-	return m_pidState.output;
+    m_term.output = std::clamp(m_term.output, (-m_config.outputLimit), m_config.outputLimit);
+	return m_term.output;
 }
 
 void SimplePIDController::reset() {
-	m_pidState.clear();
+	m_term.p = 0.0f;
+	m_term.i = 0.0f;
+	m_term.d = 0.0f;
+	m_term.output = 0.0f;
+    m_lastMeasurement = 0.0f;
     m_started = false;
 }
 
 void SimplePIDController::resetIntegral()
 {
-    m_pidState.i = 0.0f;
-}
-
-void SimplePIDController::setDerivativeFilterTau(float tau) {
-    m_derivativeTau = std::max(tau, 0.0f);
+    m_term.i = 0.0f;
 }
 
 float SimplePIDController::derivativeFilter(float current, float previous, float dt)
 {
-    float alpha = dt / (m_derivativeTau + dt);
+    float alpha = dt / (m_config.derivativeFilterTau + dt);
     return (alpha * current) + ((1.0f - alpha) * previous);
 }

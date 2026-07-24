@@ -1,27 +1,49 @@
 #pragma once
 
+// Switch between derivative modes
+enum class DerivativeMode { Measurement, Error };
+
+struct PIDGains
+{
+    float kp{0.0f};
+    float ki{0.0f};
+    float kd{0.0f};
+};
+
+struct PIDConfig
+{
+    PIDGains gains;
+
+    float integralLimit{0.0f};
+    float outputLimit{0.0f};
+
+    /**
+     * @brief Time constant for derivative low-pass filter (seconds).
+     * Larger tau = more smoothing.
+     * tau = 0 disables filtering.
+     */
+    float derivativeFilterTau{0.1f};
+
+    DerivativeMode derivativeMode{DerivativeMode::Measurement};
+};
+
+struct PIDTerm {
+    float p{0.0f};
+    float i{0.0f};
+    float d{0.0f};
+    float output{0.0f};
+};
 
 /**
  * @brief Simple PID Controller implementation.
  */
 class SimplePIDController {
 public:
-    enum class DerivativeMode { Measurement, Error };
-
     /**
      * @brief Constructor for the SimplePIDController.
-     * @param kp Proportional gain  
-     * @param ki Integral gain  
-     * @param kD Derivitive gain
-     * @param integralMax Max value for integral error to prevent i windup
-     * @param outputMax Max output value allowed
-     * @param dMode Derivitive method used. Measurement or Error based
+     * @param config PID Configuration
      */
-    SimplePIDController(
-        float kp, float ki, float kd, 
-        float integralMax, 
-        float outputMax, 
-        DerivativeMode dMode = DerivativeMode::Measurement);
+    SimplePIDController(const PIDConfig& config);
 
     /**
      * @brief Evaluate the PID controller with the given input and setpoint.
@@ -45,75 +67,20 @@ public:
      */
     void resetIntegral();
 
-    /**
-     * @brief Set derivative filter time constant (seconds).
-     * @param tau Time constant in seconds. 
-     *        tau = 0 -> no filtering
-     */
-    void setDerivativeFilterTau(float tau);
+    void setConfig(const PIDConfig& config) { m_config = config; }
 
-    /**
-     * @brief Set the PID gains.
-     * @param kp Proportional gain.
-     * @param ki Integral gain.
-     * @param kd Derivative gain.
-     */
-    void setPidGains(float kp, float ki, float kd) {
-        m_kp = kp; m_ki = ki; m_kd = kd;
-    }
-
-    /**
-     * @brief Set the maximum output limit for the PID controller.
-     * @param integralMax Maximum integral error value.
-     */
-    void setIntegralMax(float integralMax) { m_integralMax = integralMax; }
-
-    /**
-     * @brief Set the maximum output limit for the PID controller.
-     * @param outMax Maximum output value.
-     */
-    void setOutputMax(float newOutputMax) { m_outputMax = newOutputMax; }
-
-    /**
-     * @brief Getters
-     */
-    inline float getIntegralMax() const { return m_integralMax; }
-    inline float getOutputMax() const { return m_outputMax; }
-    inline float getPidOutput() const { return m_pidState.output; }
+    // Getters
+    PIDConfig getPIDConfig() { return m_config; }
+    PIDTerm getPIDState() { return m_term; }
 
 private:
     float derivativeFilter(float current, float previous, float dt);
 
-    struct PidState {
-        float p{0.0f};
-        float i{0.0f};
-        float d{0.0f};
-        float last{0.0f};
-        float output{0.0f};
-        void clear() {
-            p = i = d = last = output = 0.0f;
-        }
-    };
+    PIDConfig m_config;
 
-    // PID gains
-    float m_kp;
-    float m_ki;
-    float m_kd;
-    
-    float m_outputMax;
-    float m_integralMax;
-    
-    const DerivativeMode m_derivativeMode;
-
-    PidState m_pidState;
+    PIDTerm m_term;
+    float m_lastMeasurement{0.0f};
 
     bool m_started{false};
-
-    /**
-     * @brief Time constant for derivative low-pass filter (seconds).
-     * Larger tau = more smoothing.
-     * tau = 0 disables filtering.
-     */
-    float m_derivativeTau{0.1f};
 
 };
