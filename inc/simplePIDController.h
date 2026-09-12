@@ -1,7 +1,9 @@
 #pragma once
 
+#include <cstdint>
+
 // Switch between derivative modes
-enum class DerivativeMode { Measurement, Error };
+enum class DerivativeMode : std::uint8_t { Measurement, Error };
 
 struct PIDGains {
     float kp{0.0f};
