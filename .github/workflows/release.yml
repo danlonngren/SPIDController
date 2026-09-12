@@ -1,0 +1,39 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Configure release tests
+        run: cmake --preset release-tests
+
+      - name: Build and test release configuration
+        run: |
+          cmake --build --preset release-tests --parallel
+          ctest --preset release-tests
+
+      - name: Configure and build release package
+        run: |
+          cmake --preset release
+          cmake --build --preset release --parallel
+          cmake --install build/release
+          cpack --preset release
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/packages/*.tar.gz
+            build/packages/*.zip

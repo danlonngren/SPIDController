@@ -1,0 +1,47 @@
+{
+    // ─────────────────────────────────────────────
+    // Formatting
+    // ─────────────────────────────────────────────
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file",
+    "editor.formatOnSave": true,
+    // ─────────────────────────────────────────────
+    // clang-tidy
+    // ─────────────────────────────────────────────
+    "C_Cpp.codeAnalysis.clangTidy.enabled": true,
+    "C_Cpp.codeAnalysis.clangTidy.path": "clang-tidy",
+    "C_Cpp.codeAnalysis.clangTidy.config": "${workspaceFolder}/.clang-tidy",
+    // ─────────────────────────────────────────────
+    // CMake
+    // ─────────────────────────────────────────────
+    "cmake.useCMakePresets": "always",
+    "cmake.configureOnOpen": false,
+    "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+    // ─────────────────────────────────────────────
+    // C++
+    // ─────────────────────────────────────────────
+    "C_Cpp.files.exclude": {
+        "**/build/**": true,
+        "**/.git/**": true,
+        "**/third_party/**": true
+    },
+    // ─────────────────────────────────────────────
+    // Editor
+    // ─────────────────────────────────────────────
+    "editor.rulers": [
+        100
+    ],
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    // ─────────────────────────────────────────────
+    // Search
+    // ─────────────────────────────────────────────
+    "search.exclude": {
+        "**/build": true,
+        "**/.git": true
+    },
+    "files.watcherExclude": {
+        "**/build/**": true,
+        "**/.git/**": true
+    }
+}

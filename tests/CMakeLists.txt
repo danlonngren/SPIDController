@@ -1,31 +1,25 @@
-include(FetchContent)
+find_package(GTest 1.14 CONFIG QUIET)
 
-# Fetch googletests
-FetchContent_Declare(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG        v1.14.0  # Use any tag, commit hash, or branch
+if(NOT GTest_FOUND)
+    include(FetchContent)
+
+    set(INSTALL_GTEST OFF CACHE BOOL "Do not install GoogleTest" FORCE)
+    FetchContent_Declare(googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG v1.14.0
+        GIT_SHALLOW TRUE
+    )
+    FetchContent_MakeAvailable(googletest)
+endif()
+
+add_executable(SimplePIDControllerTests
+    simplePIDControllerTests.cpp
 )
 
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE) # For windows
-
-FetchContent_MakeAvailable(googletest)
-
-add_executable(simplePIDControllerTests 
-    simplePIDControllerTests.cpp 
+target_link_libraries(SimplePIDControllerTests PRIVATE
+    GTest::gtest_main
+    SimplePIDController::SimplePIDController
 )
 
-target_link_libraries(simplePIDControllerTests 
-    PRIVATE 
-        GTest::gtest_main
-        simplePIDController
-)
-
-target_include_directories(simplePIDControllerTests
-    PRIVATE
-        ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/source
-)
-
-include (GoogleTest)
-gtest_discover_tests(simplePIDControllerTests)
+include(GoogleTest)
+gtest_discover_tests(SimplePIDControllerTests DISCOVERY_MODE PRE_TEST)

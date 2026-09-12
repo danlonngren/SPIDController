@@ -1,0 +1,123 @@
+{
+    "version": 6,
+    "configurePresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+                "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/install"
+            }
+        },
+        {
+            "name": "debug",
+            "displayName": "Debug",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "debug-tests",
+            "displayName": "Debug (tests)",
+            "inherits": "debug",
+            "cacheVariables": {
+                "BUILD_TESTING": "ON"
+            }
+        },
+        {
+            "name": "release-dbg",
+            "displayName": "Release with debug information",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "release",
+            "displayName": "Release",
+            "inherits": "base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        },
+        {
+            "name": "release-tests",
+            "displayName": "Release (tests)",
+            "inherits": "release",
+            "cacheVariables": {
+                "BUILD_TESTING": "ON"
+            }
+        },
+        {
+            "name": "debug-analysis",
+            "displayName": "Debug (static analysis)",
+            "inherits": "debug",
+            "cacheVariables": {
+                "SPIDCONTROLLER_ENABLE_ANALYSIS": "ON"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "debug",
+            "configurePreset": "debug"
+        },
+        {
+            "name": "debug-tests",
+            "configurePreset": "debug-tests"
+        },
+        {
+            "name": "release-dbg",
+            "configurePreset": "release-dbg"
+        },
+        {
+            "name": "release",
+            "configurePreset": "release"
+        },
+        {
+            "name": "release-tests",
+            "configurePreset": "release-tests"
+        },
+        {
+            "name": "debug-static-analysis",
+            "displayName": "Debug static analysis",
+            "configurePreset": "debug-analysis",
+            "targets": [
+                "static-analysis"
+            ]
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "debug-tests",
+            "displayName": "Debug tests",
+            "configurePreset": "debug-tests",
+            "output": {
+                "outputOnFailure": true
+            }
+        },
+        {
+            "name": "release-tests",
+            "displayName": "Release tests",
+            "configurePreset": "release-tests",
+            "output": {
+                "outputOnFailure": true
+            }
+        }
+    ],
+    "packagePresets": [
+        {
+            "name": "release",
+            "displayName": "Release archives",
+            "configurePreset": "release",
+            "generators": [
+                "TGZ",
+                "ZIP"
+            ],
+            "packageDirectory": "${sourceDir}/build/packages"
+        }
+    ]
+}
